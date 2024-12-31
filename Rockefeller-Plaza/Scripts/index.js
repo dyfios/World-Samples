@@ -26,7 +26,7 @@ let runtimeMode = null;
 
 HandleQueryParams();
 
-SetButtonControls();
+SetTouchControls();
 
 let vosSynchronizer = null;
 if (runtimeMode === "webgl") {
@@ -79,18 +79,112 @@ function HandleQueryParams() {
     }
 }
 
-function SetButtonControls() {
-    var controlsEntity = Entity.GetByTag("Controls");
-    if (controlsEntity === null) {
-        Logging.LogError("SetButtonControls: Could not get controls.");
+function SetTouchControls() {
+    var upControlEntity = Entity.GetByTag("Up");
+    if (upControlEntity === null) {
+        Logging.LogError("SetButtonControls: Could not get control: Up.");
+        return;
+    }
+
+    var downControlEntity = Entity.GetByTag("Down");
+    if (downControlEntity === null) {
+        Logging.LogError("SetButtonControls: Could not get control: Down.");
         return;
     }
     
+    var leftControlEntity = Entity.GetByTag("Left");
+    if (leftControlEntity === null) {
+        Logging.LogError("SetButtonControls: Could not get control: Left.");
+        return;
+    }
+
+    var rightControlEntity = Entity.GetByTag("Right");
+    if (rightControlEntity === null) {
+        Logging.LogError("SetButtonControls: Could not get control: Right.");
+        return;
+    }
+
+    var jumpControlEntity = Entity.GetByTag("Jump");
+    if (jumpControlEntity === null) {
+        Logging.LogError("SetButtonControls: Could not get control: Jump.");
+        return;
+    }
+
+    var dropControlEntity = Entity.GetByTag("Drop");
+    if (dropControlEntity === null) {
+        Logging.LogError("SetButtonControls: Could not get control: Drop.");
+        return;
+    }
+
     if (interfaceMode === "mobile") {
-        controlsEntity.SetVisibility(true);
+        upControlEntity.SetVisibility(true);
     }
     else {
-        controlsEntity.SetVisibility(false);
+        upControlEntity.SetVisibility(false);
+    }
+    
+    if (interfaceMode === "mobile") {
+        downControlEntity.SetVisibility(true);
+    }
+    else {
+        downControlEntity.SetVisibility(false);
+    }
+
+    if (interfaceMode === "mobile") {
+        leftControlEntity.SetVisibility(true);
+    }
+    else {
+        leftControlEntity.SetVisibility(false);
+    }
+
+    if (interfaceMode === "mobile") {
+        rightControlEntity.SetVisibility(true);
+    }
+    else {
+        rightControlEntity.SetVisibility(false);
+    }
+
+    if (interfaceMode === "mobile") {
+        jumpControlEntity.SetVisibility(true);
+    }
+    else {
+        jumpControlEntity.SetVisibility(false);
+    }
+
+    if (interfaceMode === "mobile") {
+        dropControlEntity.SetVisibility(true);
+    }
+    else {
+        dropControlEntity.SetVisibility(false);
+    }
+}
+
+function ToggleView() {
+    var currentView = WorldStorage.GetItem("VIEW-MODE");
+    if (currentView == null) {
+        currentView = 0;
+    }
+    else if (currentView == 0) {
+        currentView = 1;
+    }
+    else if (currentView == 1) {
+        currentView = 0;
+    }
+    else {
+        currentView = 1;
+    }
+    WorldStorage.SetItem("VIEW-MODE", currentView);
+
+    var buttonText = Entity.GetByTag("ViewText");
+    if (buttonText != null) {
+        if (currentView == 0) {
+            buttonText.SetText("Mode: Surface");
+            thirdPersonCharacter.SetMotionModePhysical();
+        }
+        else if (currentView == 1) {
+            buttonText.SetText("Mode: Free Fly");
+            thirdPersonCharacter.SetMotionModeFree();
+        }
     }
 }
 
@@ -105,3 +199,5 @@ function OnJoinSession() {
 function OnCharacterLoaded() {
     characterLoaded = true;
 }
+
+ToggleView();

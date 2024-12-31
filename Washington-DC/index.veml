@@ -19,7 +19,7 @@
       <right-vr-poker>false</right-vr-poker>
       <left-hand-interaction>false</left-hand-interaction>
       <right-hand-interaction>false</right-hand-interaction>
-      <turn-locomotion>true</turn-locomotion>
+      <turn-locomotion>snap</turn-locomotion>
       <joystick-motion>true</joystick-motion>
       <left-grab-move>true</left-grab-move>
       <right-grab-move>false</right-grab-move>
