@@ -28,8 +28,11 @@
   </metadata>
   <environment>
     <background>
-      <panorama>Images/night.png</panorama>
+      <lite-procedural-sky sun-entity-tag="Light"></lite-procedural-sky>
     </background>
+    <effects>
+      <lite-fog fog-enabled="true" color="gray" density="0.39"></lite-fog>
+    </effects>
     <entity xsi:type="meshentity" tag="Environment">
       <mesh-name>https://webverse-samples.s3.amazonaws.com/Models/Gullfoss/gullfoss_falls_largetex.glb</mesh-name>
       <mesh-resource>https://webverse-samples.s3.amazonaws.com/Models/Gullfoss/gullfoss_falls_largetex.glb</mesh-resource>

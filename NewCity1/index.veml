@@ -1,0 +1,35 @@
+<veml>
+  <metadata>
+    <title>City 1</title>
+    <script>../Sample-Libraries/VOS-Synchronization/vossynchronization.js</script>
+    <script>../Sample-Libraries/Third-Person-Character/thirdpersoncharacter.js</script>
+    <script>../Sample-Libraries/StaticWorld/staticworld.js</script>
+    <script>Scripts/index.js</script>
+    <inputevent input="move" event="MoveCharacter(?);"></inputevent>
+    <inputevent input="endmove" event="EndMoveCharacter();"></inputevent>
+    <inputevent input="look" event="LookCharacter(?);"></inputevent>
+    <inputevent input="endlook" event="EndLookCharacter();"></inputevent>
+    <inputevent input="key" event="OnKeyPress(?)"></inputevent>
+    <inputevent input="endkey" event="OnKeyRelease(?)"></inputevent>
+    <inputevent input="lefttouchpadvaluechange" event="MoveCharacter(?);"></inputevent>
+    <inputevent input="righttouchpadvaluechange" event="LiftCharacter(?);"></inputevent>
+    <controlflags>
+      <left-vr-pointer>"teleport"</left-vr-pointer>
+      <right-vr-pointer>"ui"</right-vr-pointer>
+      <left-vr-poker>false</left-vr-poker>
+      <right-vr-poker>false</right-vr-poker>
+      <left-hand-interaction>false</left-hand-interaction>
+      <right-hand-interaction>false</right-hand-interaction>
+      <turn-locomotion>snap</turn-locomotion>
+      <joystick-motion>true</joystick-motion>
+      <left-grab-move>true</left-grab-move>
+      <right-grab-move>false</right-grab-move>
+      <two-handed-grab-move>false</two-handed-grab-move>
+    </controlflags>
+  </metadata>
+  <environment>
+    <background>
+      <color>white</color>
+    </background>
+  </environment>
+</veml>

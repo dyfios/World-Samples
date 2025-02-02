@@ -11,51 +11,94 @@ class VOSSynchronizer {
         this.onJoinedSession = onJoinedSession;
         this.onMessage = onMessage;
         this.clientID = null;
+        this.onConnect = onConnect;
         
         this.OnConnected = function() {
-            if (onConnect != null) {
-                OnConnect();
+            var context = Context.GetContext("VOSSynchronizationContext");
+            if (context.onConnect != null) {
+                context.onConnect();
             }
         }
         
+        this.Connect = function() {
+            var context = Context.GetContext("VOSSynchronizationContext");
+
+            if (context == null) {
+                return;
+            }
+            
+            var onJoinedAction =
+            `
+                var context = Context.GetContext("VOSSynchronizationContext");
+                if (context.OnConnected != null) {
+                    context.OnConnected();
+                }
+                
+                if (context.onMessage != null) {
+                    VOSSynchronization.RegisterMessageCallback(context.sessionToConnectTo.id, context.onMessage);
+                }
+
+                Logging.Log('[VOSSynchronization:Connect] Joined Session');
+                if (context.onJoinedSession != null) {
+                    context.onJoinedSession();
+                }
+            `;
+            
+            if (context.transport === "tcp" || context.transport === "TCP") {
+                VOSSynchronization.JoinSession(context.host, context.port, context.tls, context.sessionToConnectTo.id,
+                    context.sessionToConnectTo.tag, onJoinedAction, VSSTransport.TCP);
+            }
+            else if (context.transport === "websocket" || context.transport === "WEBSOCKET") {
+                VOSSynchronization.JoinSession(context.host, context.port, context.tls, context.sessionToConnectTo.id,
+                    context.sessionToConnectTo.tag, onJoinedAction, VSSTransport.WebSocket);
+            }
+            else {
+                Logging.LogError("[VOSSynchronization:Connect] Invalid transport.");
+            }
+
+            Context.DefineContext("VOSSynchronizationContext", context);
+        }
+
+        this.Disconnect = function() {
+            var context = Context.GetContext("VOSSynchronizationContext");
+
+            if (context == null) {
+                return;
+            }
+
+            //VOSSynchronization.DisconnectService(context.host, context.port);
+
+            Context.DefineContext("VOSSynchronizationContext", context);
+        }
+
         Context.DefineContext("VOSSynchronizationContext", this);
     }
     
     Connect() {
         var onJoinedAction =
-        `
-            context = Context.GetContext("VOSSynchronizationContext");
-            Logging.Log('[VOSSynchronization:Connect] Joined Session');
-            if (context.onJoinedSession != null) {
-                context.onJoinedSession();
-            }
-        `;
+            `
+                var context = Context.GetContext("VOSSynchronizationContext");
+                if (context.OnConnected != null) {
+                    context.OnConnected();
+                }
+                
+                if (context.onMessage != null) {
+                    VOSSynchronization.RegisterMessageCallback(context.sessionToConnectTo.id, context.onMessage);
+                }
+
+                Logging.Log('[VOSSynchronization:Connect] Joined Session');
+                if (context.onJoinedSession != null) {
+                    context.onJoinedSession();
+                }
+            `;
         
-        var onConnectedAction =
-        `
-            context = Context.GetContext("VOSSynchronizationContext");
-            if (context.OnConnected != null) {
-                context.OnConnected();
-            }
-            
-            if (context.onMessage != null) {
-                VOSSynchronization.RegisterMessageCallback(context.host, context.port, context.onMessage);
-            }
-            
-            if (context.sessionToConnectTo != null) {
-                context.clientID = VOSSynchronization.JoinSession(context.host, context.port, context.sessionToConnectTo.id,
-                    context.sessionToConnectTo.tag, ` + "`" + onJoinedAction + "`" + `
-                    );
-                Context.DefineContext("VOSSynchronizationContext", context);
-            }
-        `;
-        
-        var result = null;
-        if (this.transport === "tcp") {
-            result = VOSSynchronization.ConnectToService(this.host, this.port, this.tls, onConnectedAction, VSSTransport.TCP);
+        if (context.transport === "tcp" || context.transport === "TCP") {
+            VOSSynchronization.JoinSession(context.host, context.port, context.tls, context.sessionToConnectTo.id,
+                context.sessionToConnectTo.tag, onJoinedAction, VSSTransport.TCP);
         }
-        else if (this.transport === "websocket") {
-            result = VOSSynchronization.ConnectToService(this.host, this.port, this.tls, onConnectedAction, VSSTransport.WebSocket);
+        else if (context.transport === "websocket" || context.transport === "WEBSOCKET") {
+            VOSSynchronization.JoinSession(context.host, context.port, context.tls, context.sessionToConnectTo.id,
+                context.sessionToConnectTo.tag, onJoinedAction, VSSTransport.WebSocket);
         }
         else {
             Logging.LogError("[VOSSynchronization:Connect] Invalid transport.");
@@ -67,10 +110,34 @@ class VOSSynchronizer {
     }
     
     AddEntity(entityID, deleteWithClient = false, resources = null) {
-        VOSSynchronization.StartSynchronizingEntity(this.host, this.port, entityID, deleteWithClient, resources);
+        VOSSynchronization.StartSynchronizingEntity(this.sessionToConnectTo.id, entityID, deleteWithClient, resources);
     }
     
     SendMessage(topic, message) {
-        VOSSynchronization.SendMessage(this.host, this.port, topic, message);
+        VOSSynchronization.SendMessage(this.sessionToConnectTo.id, topic, message);
     }
+}
+
+function AddVOSSynchronizationEntity(entityID, deleteWithClient = false, resources = null) {
+    var context = Context.GetContext("VOSSynchronizationContext");
+
+    if (context == null) {
+        return;
+    }
+
+    VOSSynchronization.StartSynchronizingEntity(context.sessionToConnectTo.id, entityID, deleteWithClient, resources);
+
+    Context.DefineContext("VOSSynchronizationContext", context);
+}
+
+function SendVOSSynchronizationMessage(topic, message) {
+    var context = Context.GetContext("VOSSynchronizationContext");
+
+    if (context == null) {
+        return;
+    }
+
+    VOSSynchronization.SendMessage(context.sessionToConnectTo.id, topic, message);
+
+    Context.DefineContext("VOSSynchronizationContext", context);
 }
