@@ -127,23 +127,9 @@ class StaticWorld {
             context.vosSynchronizer = new VOSSynchronizer(focusedSynchronizationParams.host, focusedSynchronizationParams.port,
                 focusedSynchronizationParams.tls, focusedSynchronizationParams.transport, sessionInfo, OnConnect, OnJoinSession);
         }
-        context.thirdPersonCharacter = new ThirdPersonCharacter(context.userName, null, -90, 90, 1, 0.1,
-            new Vector3(0, 0, 0), OnCharacterLoaded, context.interfaceMode, gravityEnabled);
         context.vosSynchronizer.Connect();
 
         Context.DefineContext("STATICWORLDCONTEXT", context);
-
-        Time.SetInterval(`
-            var staticWorldContext = Context.GetContext("STATICWORLDCONTEXT");
-            if (!staticWorldContext.characterSynchronized) {
-                if (staticWorldContext.characterLoaded && staticWorldContext.sessionJoined) {
-                    AddVOSSynchronizationEntity(staticWorldContext.thirdPersonCharacter.characterEntityID, true);
-                    staticWorldContext.sessionJoined = true;
-                    staticWorldContext.characterSynchronized = true;
-                    Context.DefineContext("STATICWORLDCONTEXT", staticWorldContext);
-                }
-            }
-        `, 0.1);
 
         function HandleQueryParams() {
             var context = Context.GetContext("STATICWORLDCONTEXT");
@@ -182,12 +168,25 @@ class StaticWorld {
         
         function OnJoinSession() {
             var context = Context.GetContext("STATICWORLDCONTEXT");
+            context.thirdPersonCharacter = new ThirdPersonCharacter(context.userName, null,
+                -90, 90, 1, 0.1, new Vector3(0, 0, 0), OnCharacterLoaded, context.interfaceMode,
+                gravityEnabled);
             context.sessionJoined = true;
+            SetUpControls();
+            SetTouchControls();
+            ToggleView();
             Context.DefineContext("STATICWORLDCONTEXT", context);
         }
         
-        function OnCharacterLoaded() {
+        function OnCharacterLoaded(id) {
             var context = Context.GetContext("STATICWORLDCONTEXT");
+
+            AddVOSSynchronizationEntity(id, true);
+
+            context.sessionJoined = true;
+
+            context.characterSynchronized = true;
+
             context.characterLoaded = true;
             Context.DefineContext("STATICWORLDCONTEXT", context);
         }
@@ -319,10 +318,6 @@ class StaticWorld {
                 dropControlEntity.SetVisibility(false);
             }
         }
-        
-        SetUpControls();
-        SetTouchControls();
-        ToggleView();
     }
 
     AddDirectionalLightEntity(parent, position, rotation, tag) {

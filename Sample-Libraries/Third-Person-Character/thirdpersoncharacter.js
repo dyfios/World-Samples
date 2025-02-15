@@ -34,11 +34,13 @@ class ThirdPersonCharacter {
         }
         
         this.OnLoaded = function() {
-            if (onLoaded != null) {
-                onLoaded();
-            }
             var context = Context.GetContext("thirdPersonCharacterContext");
+            if (onLoaded != null) {
+                onLoaded(context.characterEntityID);
+            }
+            
             context.characterEntity.SetInteractionState(InteractionState.Physical);
+            context.characterEntity.SetVisibility(true, true);
             if (mode === "vr") {
                 //Camera.AddCameraFollower(context.characterEntity);
                 context.characterEntity.SetVisibility(false, false);
