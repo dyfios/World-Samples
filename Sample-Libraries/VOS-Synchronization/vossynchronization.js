@@ -46,11 +46,11 @@ class VOSSynchronizer {
             
             if (context.transport === "tcp" || context.transport === "TCP") {
                 VOSSynchronization.JoinSession(context.host, context.port, context.tls, context.sessionToConnectTo.id,
-                    context.sessionToConnectTo.tag, onJoinedAction, VSSTransport.TCP);
+                    context.sessionToConnectTo.tag, onJoinedAction, VSSTransport.TCP, UUID.NewUUID().ToString());
             }
             else if (context.transport === "websocket" || context.transport === "WEBSOCKET") {
                 VOSSynchronization.JoinSession(context.host, context.port, context.tls, context.sessionToConnectTo.id,
-                    context.sessionToConnectTo.tag, onJoinedAction, VSSTransport.WebSocket);
+                    context.sessionToConnectTo.tag, onJoinedAction, VSSTransport.WebSocket, UUID.NewUUID().ToString());
             }
             else {
                 Logging.LogError("[VOSSynchronization:Connect] Invalid transport.");
