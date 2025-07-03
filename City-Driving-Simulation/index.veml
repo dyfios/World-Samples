@@ -1,0 +1,50 @@
+<veml>
+  <metadata>
+    <title>City Driving Simulation</title>
+    <!-- Required libraries for multiplayer and world setup -->
+    <script>../Sample-Libraries/VOS-Synchronization/vossynchronization.js</script>
+    <script>../Sample-Libraries/StaticWorld/staticworld.js</script>
+    <script>../Sample-Libraries/Loading-Indicator/loadingindicator.js</script>
+    <!-- Custom vehicle and traffic control scripts -->
+    <script>Scripts/vehicle-controller.js</script>
+    <script>Scripts/traffic-system.js</script>
+    <script>Scripts/index.js</script>
+    
+    <!-- Vehicle Control Input Events -->
+    <!-- Primary movement controls -->
+    <inputevent input="move" event="DriveVehicle(?);"></inputevent>
+    <inputevent input="endmove" event="StopVehicle();"></inputevent>
+    <inputevent input="look" event="SteerVehicle(?);"></inputevent>
+    <inputevent input="endlook" event="StopSteering();"></inputevent>
+    
+    <!-- Keyboard controls for driving -->
+    <inputevent input="key" event="OnKeyPress(?)"></inputevent>
+    <inputevent input="endkey" event="OnKeyRelease(?)"></inputevent>
+    
+    <!-- VR/Touchpad controls -->
+    <inputevent input="lefttouchpadvaluechange" event="DriveVehicle(?);"></inputevent>
+    <inputevent input="righttouchpadvaluechange" event="SteerVehicle(?);"></inputevent>
+    
+    <!-- Control flags optimized for driving simulation -->
+    <controlflags>
+      <left-vr-pointer>"teleport"</left-vr-pointer>
+      <right-vr-pointer>"ui"</right-vr-pointer>
+      <left-vr-poker>false</left-vr-poker>
+      <right-vr-poker>false</right-vr-poker>
+      <left-hand-interaction>true</left-hand-interaction>
+      <right-hand-interaction>true</right-hand-interaction>
+      <turn-locomotion>continuous</turn-locomotion>
+      <joystick-motion>true</joystick-motion>
+      <left-grab-move>false</left-grab-move>
+      <right-grab-move>false</right-grab-move>
+      <two-handed-grab-move>false</two-handed-grab-move>
+    </controlflags>
+  </metadata>
+  
+  <environment>
+    <background>
+      <!-- Sky background for city environment -->
+      <color>lightblue</color>
+    </background>
+  </environment>
+</veml>
