@@ -371,7 +371,12 @@ function LiftCharacterOneStep() {
         var newMotion = new Vector3(0, context.motionMultiplier, 0);
         var newPosition = new Vector3(context.currentTransform.position.x + newMotion.x,
             context.currentTransform.position.y + newMotion.y, context.currentTransform.position.z + newMotion.z);
-        context.characterEntity.SetPosition(newPosition, false);
+        if (context.motionMode == "physical") {
+            context.characterEntity.Move(new Vector3(0, newMotion.y, 0));
+        }
+        else {
+            context.characterEntity.SetPosition(newPosition, false);
+        }
     }
     Context.DefineContext("thirdPersonCharacterContext", context);
 }
@@ -402,7 +407,12 @@ function MoveCharacterOneStep(x, y) {
             0, context.currentTransform.forward.z * (x * context.motionMultiplier) - context.currentTransform.right.z * (y * context.motionMultiplier));
         var newPosition = new Vector3(context.currentTransform.position.x + newMotion.x,
             context.currentTransform.position.y, context.currentTransform.position.z + newMotion.z);
-        context.characterEntity.SetPosition(newPosition, false);
+        if (context.motionMode == "physical") {
+            context.characterEntity.Move(new Vector3(newMotion.x, 0, newMotion.z));
+        }
+		else {
+			context.characterEntity.SetPosition(newPosition, false);
+		}
     }
     Context.DefineContext("thirdPersonCharacterContext", context);
 }
