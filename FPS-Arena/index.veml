@@ -1,0 +1,355 @@
+<veml>
+  <metadata>
+    <title>FPS Arena - Multiplayer First Person Shooter</title>
+    <!-- Include required sample libraries -->
+    <script>../Sample-Libraries/VOS-Synchronization/vossynchronization.js</script>
+    <script>../Sample-Libraries/Type-Utilities/typeutilities.js</script>
+    <script>Scripts/fps-arena.js</script>
+    
+    <!-- Input event mappings for FPS controls -->
+    <inputevent input="move" event="OnMove(?);"></inputevent>
+    <inputevent input="endmove" event="OnEndMove();"></inputevent>
+    <inputevent input="look" event="OnLook(?);"></inputevent>
+    <inputevent input="endlook" event="OnEndLook();"></inputevent>
+    <inputevent input="key" event="OnKeyPress(?);"></inputevent>
+    <inputevent input="endkey" event="OnKeyRelease(?);"></inputevent>
+    <inputevent input="leftclick" event="OnShoot();"></inputevent>
+    
+    <!-- VR input events for VR compatibility -->
+    <inputevent input="lefttouchpadvaluechange" event="OnMove(?);"></inputevent>
+    <inputevent input="righttouchpadvaluechange" event="OnLook(?);"></inputevent>
+    <inputevent input="leftgrip" event="OnShoot();"></inputevent>
+    
+    <!-- Control flags optimized for FPS gameplay -->
+    <controlflags>
+      <left-vr-pointer>"teleport"</left-vr-pointer>
+      <right-vr-pointer>"ui"</right-vr-pointer>
+      <left-vr-poker>false</left-vr-poker>
+      <right-vr-poker>false</right-vr-poker>
+      <left-hand-interaction>true</left-hand-interaction>
+      <right-hand-interaction>true</right-hand-interaction>
+      <turn-locomotion>smooth</turn-locomotion>
+      <joystick-motion>true</joystick-motion>
+      <left-grab-move>false</left-grab-move>
+      <right-grab-move>false</right-grab-move>
+      <two-handed-grab-move>false</two-handed-grab-move>
+    </controlflags>
+  </metadata>
+  
+  <environment>
+    <!-- Arena environment background -->
+    <background>
+      <!-- USER ASSET PLACEHOLDER: Replace with arena sky texture -->
+      <!-- Expected format: PNG/JPG, recommended size: 2048x1024 -->
+      <!-- Suggested content: Outdoor arena sky, sci-fi environment, or battleground atmosphere -->
+      <sky-texture>Images/arena-sky.png</sky-texture>
+      <color>#2C3E50</color>
+    </background>
+    
+    <!-- Lighting setup for combat visibility -->
+    <entity tag="arena-lighting">
+      <transform>
+        <position x="0" y="25" z="0" />
+        <rotation x="0.3827" y="0" z="0" w="0.9239" />
+        <scale x="1" y="1" z="1" />
+      </transform>
+      <entity>
+        <lightentity>
+          <light-type>directional</light-type>
+          <color>#FFFFFF</color>
+          <intensity>1.2</intensity>
+        </lightentity>
+      </entity>
+    </entity>
+    
+    <!-- Arena Environment (USER MODEL PLACEHOLDER) -->
+    <!-- 
+      REPLACE THIS SECTION: Arena/Battlefield 3D Model
+      - File format: .gltf or .glb
+      - Recommended size: 50x50 units
+      - Should include: Cover elements, spawn points, clear sightlines
+      - Ground plane should be at Y=0
+      - Include walls/boundaries to contain combat area
+    -->
+    <entity tag="arena-environment">
+      <transform>
+        <position x="0" y="0" z="0" />
+        <rotation x="0" y="0" z="0" w="1" />
+        <scale x="1" y="1" z="1" />
+      </transform>
+      <entity>
+        <!-- PLACEHOLDER: Replace URL with your arena model -->
+        <meshentity src="ARENA_MODEL_URL_PLACEHOLDER">
+          <!-- Will be loaded via JavaScript with proper URL -->
+        </meshentity>
+      </entity>
+    </entity>
+    
+    <!-- Basic arena floor for testing -->
+    <entity tag="arena-floor">
+      <transform>
+        <position x="0" y="0" z="0" />
+        <rotation x="0" y="0" z="0" w="1" />
+        <scale x="50" y="0.5" z="50" />
+      </transform>
+      <entity>
+        <cubemeshentity>
+          <color>#34495E</color>
+        </cubemeshentity>
+      </entity>
+    </entity>
+    
+    <!-- Cover elements for tactical gameplay -->
+    <entity tag="cover-elements">
+      <!-- Cover Box 1 -->
+      <entity tag="cover-1">
+        <transform>
+          <position x="10" y="1" z="5" />
+          <rotation x="0" y="0" z="0" w="1" />
+          <scale x="3" y="2" z="1" />
+        </transform>
+        <entity>
+          <cubemeshentity>
+            <color>#7F8C8D</color>
+          </cubemeshentity>
+        </entity>
+      </entity>
+      
+      <!-- Cover Box 2 -->
+      <entity tag="cover-2">
+        <transform>
+          <position x="-10" y="1" z="-5" />
+          <rotation x="0" y="0" z="0" w="1" />
+          <scale x="3" y="2" z="1" />
+        </transform>
+        <entity>
+          <cubemeshentity>
+            <color>#7F8C8D</color>
+          </cubemeshentity>
+        </entity>
+      </entity>
+      
+      <!-- Cover Cylinder -->
+      <entity tag="cover-3">
+        <transform>
+          <position x="0" y="1.5" z="15" />
+          <rotation x="0" y="0" z="0" w="1" />
+          <scale x="2" y="3" z="2" />
+        </transform>
+        <entity>
+          <cylindermeshentity>
+            <color>#95A5A6</color>
+          </cylindermeshentity>
+        </entity>
+      </entity>
+    </entity>
+    
+    <!-- Arena boundaries -->
+    <entity tag="arena-walls">
+      <!-- North Wall -->
+      <entity tag="wall-north">
+        <transform>
+          <position x="0" y="3" z="25" />
+          <rotation x="0" y="0" z="0" w="1" />
+          <scale x="52" y="6" z="2" />
+        </transform>
+        <entity>
+          <cubemeshentity>
+            <color>#2C3E50</color>
+          </cubemeshentity>
+        </entity>
+      </entity>
+      
+      <!-- South Wall -->
+      <entity tag="wall-south">
+        <transform>
+          <position x="0" y="3" z="-25" />
+          <rotation x="0" y="0" z="0" w="1" />
+          <scale x="52" y="6" z="2" />
+        </transform>
+        <entity>
+          <cubemeshentity>
+            <color>#2C3E50</color>
+          </cubemeshentity>
+        </entity>
+      </entity>
+      
+      <!-- East Wall -->
+      <entity tag="wall-east">
+        <transform>
+          <position x="25" y="3" z="0" />
+          <rotation x="0" y="0" z="0" w="1" />
+          <scale x="2" y="6" z="50" />
+        </transform>
+        <entity>
+          <cubemeshentity>
+            <color>#2C3E50</color>
+          </cubemeshentity>
+        </entity>
+      </entity>
+      
+      <!-- West Wall -->
+      <entity tag="wall-west">
+        <transform>
+          <position x="-25" y="3" z="0" />
+          <rotation x="0" y="0" z="0" w="1" />
+          <scale x="2" y="6" z="50" />
+        </transform>
+        <entity>
+          <cubemeshentity>
+            <color>#2C3E50</color>
+          </cubemeshentity>
+        </entity>
+      </entity>
+    </entity>
+    
+    <!-- HUD Canvas for UI Elements -->
+    <entity tag="fps-hud">
+      <transform>
+        <position-percent x="0" y="0" />
+        <size-percent x="1.0" y="1.0" />
+      </transform>
+      <entity>
+        <canvasentity>
+          <!-- Health Bar Container -->
+          <entity tag="health-container">
+            <transform>
+              <position-percent x="0.02" y="0.02" />
+              <size-percent x="0.3" y="0.06" />
+            </transform>
+            <entity>
+              <!-- Health Bar Background -->
+              <entity tag="health-bg">
+                <transform>
+                  <position-percent x="0" y="0" />
+                  <size-percent x="1.0" y="1.0" />
+                </transform>
+                <entity>
+                  <imageentity>
+                    <!-- USER ASSET PLACEHOLDER: Health bar background -->
+                    <!-- Expected: PNG with transparency, dark background -->
+                    <src>Images/health-bar-bg.png</src>
+                  </imageentity>
+                </entity>
+              </entity>
+              
+              <!-- Health Bar Fill -->
+              <entity tag="health-fill">
+                <transform>
+                  <position-percent x="0.02" y="0.2" />
+                  <size-percent x="0.96" y="0.6" />
+                </transform>
+                <entity>
+                  <imageentity>
+                    <!-- USER ASSET PLACEHOLDER: Health bar fill -->
+                    <!-- Expected: PNG, green to red gradient -->
+                    <src>Images/health-bar-fill.png</src>
+                  </imageentity>
+                </entity>
+              </entity>
+              
+              <!-- Health Text -->
+              <entity tag="health-text">
+                <transform>
+                  <position-percent x="0.1" y="0.3" />
+                  <size-percent x="0.8" y="0.4" />
+                </transform>
+                <entity>
+                  <textentity>
+                    <text>Health: 100</text>
+                    <font-size>16</font-size>
+                    <color>#FFFFFF</color>
+                  </textentity>
+                </entity>
+              </entity>
+            </entity>
+          </entity>
+          
+          <!-- Weapon HUD -->
+          <entity tag="weapon-hud">
+            <transform>
+              <position-percent x="0.7" y="0.02" />
+              <size-percent x="0.28" y="0.15" />
+            </transform>
+            <entity>
+              <!-- Weapon Icon -->
+              <entity tag="weapon-icon">
+                <transform>
+                  <position-percent x="0.05" y="0.1" />
+                  <size-percent x="0.3" y="0.8" />
+                </transform>
+                <entity>
+                  <imageentity>
+                    <!-- USER ASSET PLACEHOLDER: Weapon icon -->
+                    <!-- Expected: PNG with transparency, weapon silhouette -->
+                    <src>Images/weapon-rifle.png</src>
+                  </imageentity>
+                </entity>
+              </entity>
+              
+              <!-- Ammo Counter -->
+              <entity tag="ammo-text">
+                <transform>
+                  <position-percent x="0.4" y="0.2" />
+                  <size-percent x="0.55" y="0.6" />
+                </transform>
+                <entity>
+                  <textentity>
+                    <text>30 / 120</text>
+                    <font-size>18</font-size>
+                    <color>#FFFFFF</color>
+                  </textentity>
+                </entity>
+              </entity>
+            </entity>
+          </entity>
+          
+          <!-- Score Display -->
+          <entity tag="score-hud">
+            <transform>
+              <position-percent x="0.4" y="0.02" />
+              <size-percent x="0.2" y="0.08" />
+            </transform>
+            <entity>
+              <textentity>
+                <text>Eliminations: 0</text>
+                <font-size>16</font-size>
+                <color>#FFD700</color>
+              </textentity>
+            </entity>
+          </entity>
+          
+          <!-- Crosshair -->
+          <entity tag="crosshair">
+            <transform>
+              <position-percent x="0.49" y="0.49" />
+              <size-percent x="0.02" y="0.02" />
+            </transform>
+            <entity>
+              <imageentity>
+                <!-- USER ASSET PLACEHOLDER: Crosshair image -->
+                <!-- Expected: PNG with transparency, simple crosshair design -->
+                <src>Images/crosshair.png</src>
+              </imageentity>
+            </entity>
+          </entity>
+          
+          <!-- Respawn Message (initially hidden) -->
+          <entity tag="respawn-message">
+            <transform>
+              <position-percent x="0.3" y="0.4" />
+              <size-percent x="0.4" y="0.2" />
+            </transform>
+            <entity>
+              <textentity>
+                <text>ELIMINATED! Respawning in 3...</text>
+                <font-size>24</font-size>
+                <color>#FF4444</color>
+              </textentity>
+            </entity>
+          </entity>
+        </canvasentity>
+      </entity>
+    </entity>
+  </environment>
+</veml>
